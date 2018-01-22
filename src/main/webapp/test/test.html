@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<p><input type="text" id="hql" style="width: 500px;" value="from TestOneBean t where t.userName='name_1'"></p>
+
+<p><input type="button" value="查询" id="btn"></p>
+
+<script src="/resources/plugin/jquery/jquery-2.1.4.min.js"></script>
+<script>
+
+    $('#btn').click(function () {
+        $.ajax({
+
+            type : 'post',
+            url : '/test/query.shtml',
+            dataType : 'json',
+            data : {
+                'hql' : $('#hql').val()
+            },
+            success : function (jsonArray) {
+                console.log(jsonArray);
+            }
+
+        });
+    });
+
+
+
+</script>
+
+</body>
+</html>

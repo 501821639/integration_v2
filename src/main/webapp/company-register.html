@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>单位注册</title>
+    <link rel="stylesheet" type="text/css" href="resources/plugin/bootstrap/css/bootstrap.min.css">
+    <style>
+        #company{margin-top: 20px;}
+        #company > .row{margin-top: 10px;}
+    </style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3">
+
+            <div class="container-fluid" id="company">
+
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">单位名称</span>
+                            <input type="text" class="form-control name" aria-describedby="sizing-addon1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">上级单位</span>
+                            <input type="text" class="form-control p-name" aria-describedby="sizing-addon1" placeholder="默认无上级单位" data-company-id="0" disabled="disabled">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default search" type="button">搜索</button>
+                                <button class="btn btn-default reset-company" type="button">重置</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <select class="form-control type" title="单位类型">
+                            <option value="0">单位类型</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <select class="form-control nature" title="单位性质">
+                            <option value="0">单位性质</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 region-content">
+                        <div class="input-group">
+                            <select class="form-control region" title="省市直辖区">
+                                <option value="0">省市直辖区</option>
+                            </select>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default reset-region" type="button">重选</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">社会信用代码</span>
+                            <input type="text" class="form-control code" aria-describedby="sizing-addon1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="input-group">
+                                <span class="input-group-addon">座机</span>
+                                <input type="text" class="form-control phone" aria-describedby="sizing-addon1">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">用户账号</span>
+                            <input type="text" class="form-control username" aria-describedby="sizing-addon1">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">验证码</span>
+                            <input type="text" class="form-control user-auth" aria-describedby="sizing-addon1">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default get-auth" type="button">获取</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 col-lg-offset-5 col-md-offset-5 col-sm-offset-5 col-xs-offset-5">
+                        <button type="button" class="btn btn-default btn-block btn-save">注&nbsp;&nbsp;册</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- 单位列表弹出层 -->
+<div class="modal fade" id="modal-company-list" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document" style="margin:140px auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">单位列表</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>单位名称</th>
+                            <th>审核状态</th>
+                            <th>上级单位</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary confirm">确定</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="resources/plugin/jquery/jquery-1.10.2.min.js"></script>
+<script src="resources/plugin/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="resources/plugin/layer/layer.js"></script>
+<script type="text/javascript" src="resources/root/js/company-register.js"></script>
+
+</body>
+</html>

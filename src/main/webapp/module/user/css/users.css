@@ -1,0 +1,11 @@
+.container-fluid .row{
+    margin-bottom: 10px;
+}
+
+#modal-role-list .container-fluid .row{
+    border-bottom:1px #e5e5e5 solid;
+}
+
+#modal-role-list .container-fluid .row:last-child{
+    border-bottom:none;
+}

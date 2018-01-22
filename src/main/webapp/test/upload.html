@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>多文件上传</title>
+</head>
+<body>
+
+<a href="javascript:;" id="um">上传图片</a>
+
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"  crossorigin="anonymous"></script>
+<script type="text/javascript" src="http://172.16.6.27:8081/test/html5upload-1.0.1/upload.js"></script>
+
+<script>
+
+    $('#um').html5upload({
+
+        title : '相册',
+        url : '/user/portrait.shtml',
+
+        customData : {
+            url : 'text/yry',
+            key : 'id',
+            get : 'val',
+            create : [
+                $('<textarea>').attr({
+                    'id' : 'content',
+                    'class' : 'form-control',
+                    'placeholder' : '内容'
+                }).css({
+                    height : 120,
+                    'resize' : 'none'
+                })
+            ]
+        }
+    });
+
+
+</script>
+
+</body>
+</html>

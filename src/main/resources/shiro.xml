@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--
+    说明：浏览器会缓存页面，所以有的时候会出现用户退出页面依然能访问页面等状况,但是依然会拦截controller数据
+    -->
+
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+
+        <property name="securityManager" ref="securityManager"/>
+
+        <!-- 自定义过滤链 -->
+        <property name="filters">
+            <map>
+                <entry key="kickout" value-ref="kickoutSessionControlFilter"/><!--并发登陆限制-->
+            </map>
+        </property>
+
+        <!-- 认证成功跳转,不建议配置 -->
+        <!--由于使用spring mvc框架 该配置不生效-->
+       <!-- <property name="successUrl" value="/adminAsx"/>-->
+
+        <!--认证地址-->
+        <property name="loginUrl" value="/user/login.shtml"/>
+
+        <!--无权限访问页面-->
+        <property name="unauthorizedUrl" value="/error/NoPrmission.html"/>
+
+        <property name="filterChainDefinitions">
+            <value>
+
+                <!--可以匿名访问-->
+                /favicon.ico = anon
+                /resources/** = anon<!--插件、工具类-->
+                /publicity/** = anon<!--对外公开资源-->
+                /test/** = anon<!--测试入口-->
+
+                /user/auth.shtml = anon<!--用户注册生成验证码-->
+                /company/auth.shtml = anon<!--单位注册生成验证码-->
+
+                /user/register.shtml = anon<!--用户注册请求连接-->
+                /user-register.html = anon<!--用户注册html页-->
+
+                /company/register.shtml = anon<!--单位注册请求连接-->
+                /company-register.html = anon<!--单位注册html页-->
+                /company/findSuper.shtml = anon<!--查询上级单位信息-->
+
+                /region/find.shtml = anon<!--地区json-->
+                /companyType/find.shtml = anon<!--单位类型json-->
+                /companyNature/find.shtml = anon<!--单位性质json-->
+
+                <!--后台模板A-->
+                /adminAsx/favicon/** = anon
+                /adminAsx/images/** = anon
+                /adminAsx/javascripts/** = anon
+                /adminAsx/stylesheets/** = anon
+                /adminAsx/vendor/** = anon
+
+                <!--用户退出-->
+                /logout = logout
+
+                <!-- 配置记住我或认证通过可以访问的地址 -->
+                <!--/admin/**  = user-->
+
+                <!--所有资源都需要认证-->
+                /** = kickout,authc
+
+            </value>
+        </property>
+
+    </bean>
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="customRealm"/>
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="sessionManager" ref="sessionManager"/>
+        <!--shiro出于安全考虑 记住我只能访问页面 不能用于url数据的访问 session中也无数据-->
+        <!--<property name="rememberMeManager" ref="rememberMeManager"/>-->
+    </bean>
+
+    <!--自定义realm-->
+    <bean id="customRealm" class="com.shiro.realm.CustomRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"/>
+    </bean>
+
+    <!--开启注解权限-->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    <!-- 凭证匹配器 -->
+    <!--<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+        <property name="hashIterations" value="2017"/>
+    </bean>-->
+    <bean id="credentialsMatcher" class="com.shiro.RetryLimitCredentialsMatcher">
+        <constructor-arg ref="cacheManager" />
+        <property name="hashAlgorithmName" value="md5"/>
+        <property name="hashIterations" value="2017"/>
+    </bean>
+
+    <!-- 缓存管理器 -->
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <property name="cacheManagerConfigFile" value="classpath:shiro-ehcache.xml"/>
+    </bean>
+
+    <!-- 会话管理器 -->
+    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <property name="globalSessionTimeout" value="1800000"/> <!-- session的失效时长，单位毫秒 -->
+        <property name="deleteInvalidSessions" value="true"/> <!-- 删除失效的session -->
+        <property name="sessionIdCookieEnabled" value="true"/> <!--会话cookie-->
+        <property name="sessionValidationSchedulerEnabled" value="true"/> <!-- 是否开启 检测，默认开启 -->
+        <property name="sessionDAO" ref="sessionDAO"/> <!--sessionDao-->
+        <property name="sessionIdCookie" ref="sessionIdCookie"/>
+        <property name="sessionValidationScheduler" ref="sessionValidationScheduler"/>
+    </bean>
+    <!--sessionDAO-->
+    <bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO">
+        <property name="sessionIdGenerator" ref="sessionIdGenerator"/>
+        <property name="activeSessionsCacheName" value="shiro-activeSessionCache"/>
+        <!--cache缓存:资料显示securityManager配置缓存这里不用进行配置-->
+        <!--<property name="cacheManager" ref="cacheManager"/>-->
+    </bean>
+    <!-- 会话Cookie模板 -->
+    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="sid"/>
+        <property name="httpOnly" value="true"/>
+        <property name="maxAge" value="-1"/>
+    </bean>
+    <!-- 会话验证调度器 -->
+    <bean id="sessionValidationScheduler" class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler ">
+        <property name="interval" value="1800000"/>
+        <property name="sessionManager" ref="sessionManager"/>
+    </bean>
+    <!-- 会话ID生成器 -->
+    <bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
+
+    <bean id="kickoutSessionControlFilter"  class="com.shiro.interceptor.KickoutSessionControlFilter">
+        <property name="maxSession" value="1"/>
+        <property name="kickoutUrl" value="/error/kickout.html"/>
+        <property name="sessionManager" ref="sessionManager"/>
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
+    <!-- rememberMeManager管理器，写cookie，取出cookie生成用户信息 -->
+    <!--
+    <bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+        <property name="cookie" ref="rememberMeCookie"/>
+    </bean>
+    <bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="rememberMe"/>
+        <property name="maxAge" value="2592000"/>
+    </bean>
+    -->
+
+</beans>
